@@ -1,15 +1,27 @@
 export function printOwing(invoice) {
-  let outstanding = 0;
+  printBanner();
+  let outstanding = calculateOutstanding(invoice);
+  recordDueDate(invoice);
+  printDetails(invoice, outstanding);
+}
 
-  console.log('***********************');
-  console.log('**** Customer Owes ****');
-  console.log('***********************');
+function printBanner() {
+  console.log("***********************");
+  console.log("**** Customer Owes ****");
+  console.log("***********************");
+}
 
+function calculateOutstanding(invoice) {
+  return invoice.orders.reduce((sum, order) => (sum += order.amount), 0);
   // calculate outstanding
+  let outstanding = 0;
   for (const o of invoice.orders) {
     outstanding += o.amount;
   }
+  return outstanding;
+}
 
+function recordDueDate(invoice) {
   // record due date
   const today = new Date();
   invoice.dueDate = new Date(
@@ -17,7 +29,9 @@ export function printOwing(invoice) {
     today.getMonth(),
     today.getDate() + 30
   );
+}
 
+function printDetails(invoice, outstanding) {
   //print details
   console.log(`name: ${invoice.customer}`);
   console.log(`amount: ${outstanding}`);
@@ -26,6 +40,7 @@ export function printOwing(invoice) {
 
 const invoice = {
   orders: [{ amount: 2 }, { amount: 5 }],
-  customer: '엘리',
+  customer: "엘리",
 };
+
 printOwing(invoice);

@@ -1,7 +1,7 @@
 {
   "name": "refactoring",
   "version": "1.0.0",
-  "description": "",
+  "description": "드림코딩 리팩토링의 모든 것 (https://academy.dream-coding.com/courses/refactoring)",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -15,5 +15,13 @@
   },
   "dependencies": {
     "lodash": "^4.17.21"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usinia/dreamcoding_refectoring.git"
+  },
+  "bugs": {
+    "url": "https://github.com/usinia/dreamcoding_refectoring/issues"
+  },
+  "homepage": "https://github.com/usinia/dreamcoding_refectoring#readme"
 }
