@@ -1,3 +1,3 @@
-export function circum(radius) {
+export default function circumference(radius) {
   return 2 * Math.PI * radius;
 }
