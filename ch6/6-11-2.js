@@ -1,28 +1,37 @@
 import fs from "fs";
 
-const fileName = process.argv[2];
-const orders = openFile(fileName);
-const isReady = process.argv.includes("-r");
-console.log(countsOrders(isReady));
+// 1. run 함수를 만들어서 노드의 process dependency 를 제거함
+run(process.argv);
 
-function openFile(name) {
-  if (!name) {
+// 2. 사용자에게 입력을 받아옴 -> 유효성 검사
+// 3. 필요한 로직 처리
+function run(args) {
+  countOrders(parseCommand(args));
+}
+
+function parseCommand(args) {
+  if (!args[2]) {
     throw new Error("파일 이름을 입력하세요");
   }
 
-  const fileName = `./${process.argv[2]}.json`;
+  const fileName = `./${args[2]}.json`;
   if (!fs.existsSync(fileName)) {
     throw new Error("파일이 존재하지 않습니다");
   }
 
-  const rawData = fs.readFileSync(fileName);
-  return JSON.parse(rawData);
+  const countReadyOnly = args.includes("-r");
+
+  return {
+    fileName,
+    countReadyOnly,
+  };
 }
 
-function countsOrders(onlyCountReady = false) {
-  if (onlyCountReady) {
-    return orders.filter((order) => order.status === "ready").length;
-  } else {
-    return orders.length;
-  }
+function countOrders({ fileName, countReadyOnly }) {
+  const rawData = fs.readFileSync(fileName);
+  const orders = JSON.parse(rawData);
+  const filtered = countReadyOnly
+    ? orders.filter((order) => order.status === "ready").length
+    : orders.length;
+  console.log(filtered);
 }
