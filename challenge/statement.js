@@ -1,60 +1,29 @@
-export function statement(invoice, plays) {
-  const s = {};
-  s.customer = invoice.customer;
-  s.performances = invoice.performances.map(enrichPerformance);
-  s.totalAmount = totalAmount(s.performances);
-  s.totalCredit = totalCredit(s.performances);
-  console.log(s);
-  return renderPlainText(s, plays);
+import { createStatement } from "./create_statement.js";
 
-  function enrichPerformance(performance) {
-    const result = { ...performance };
-    result.play = playFor(performance);
-    result.amount = amountFor(result);
-    result.credit = creditFor(result);
-    return result;
-  }
-  function playFor(performance) {
-    return plays[performance.playID];
-  }
-  function creditFor(performance) {
-    let result = 0;
-    result += Math.max(performance.audience - 30, 0);
-    // 희극 관객 5명마다 추가 포인트를 제공한다.
-    if ("comedy" === performance.play.type)
-      result += Math.floor(performance.audience / 5);
-    return result;
-  }
-  function amountFor(performance) {
-    let result = 0;
-    switch (performance.play.type) {
-      case "tragedy": // 비극
-        result = 40000;
-        if (performance.audience > 30) {
-          result += 1000 * (performance.audience - 30);
-        }
-        break;
-      case "comedy": // 희극
-        result = 30000;
-        if (performance.audience > 20) {
-          result += 10000 + 500 * (performance.audience - 20);
-        }
-        result += 300 * performance.audience;
-        break;
-      default:
-        throw new Error(`알 수 없는 장르: ${performance.play.type}`);
-    }
-    return result;
-  }
-  function totalCredit(performances) {
-    return performances.reduce((total, p) => (total += p.credit), 0);
-  }
-  function totalAmount(performances) {
-    return performances.reduce((amount, p) => (amount += p.amount), 0);
-  }
+export function statement(invoice, plays) {
+  return renderPlainText(createStatement(invoice, plays), plays);
 }
 
-function renderPlainText(statement, plays) {
+export function htmlStatement(invoice, plays) {
+  return renderHTML(createStatement(invoice, plays), plays);
+}
+
+function renderHTML(statement) {
+  let result = `<h1>청구 내역 (고객명: ${statement.customer})</h1>\n`;
+  result += `<table>\n`;
+  result += `<tr><th>play</th><th>석</th><th>cost</th></tr>`;
+  for (let perf of statement.performances) {
+    result += `  <tr><td>${perf.play.name}</td><td>${
+      perf.audience
+    }</td><td>${usd(perf.amount / 100)}</td></tr>\n`;
+  }
+  result += `</table>\n`;
+  result += `<p>총액: <em>${usd(statement.totalAmount / 100)}</em></p>\n`;
+  result += `<p>적립 포인트: <em>${statement.totalCredit}</em>점</p>`;
+  return result;
+}
+
+function renderPlainText(statement) {
   let result = `청구 내역 (고객명: ${statement.customer})\n`;
   for (let perf of statement.performances) {
     result += `  ${perf.play.name}: ${usd(perf.amount / 100)} (${
