@@ -1,6 +1,8 @@
 # dreamcoding_refectoring
 드림코딩 리팩토링의 모든 것 (https://academy.dream-coding.com/courses/refactoring)
 
+---
+
 ## 강의 커리큘럼
 1. 강의 소개
 2. 리팩토링 원칙
